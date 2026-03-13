@@ -6,6 +6,8 @@
   "license": "PSF-2.0",
   "supports": "native",
   "dependencies": [
+    "freetype",
+    "pybind11",
     {
       "name": "python3",
       "default-features": false,
@@ -13,6 +15,7 @@
         "extensions"
       ]
     },
+    "qhull",
     {
       "name": "vcpkg-get-python-packages",
       "host": true

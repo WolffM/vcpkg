@@ -9,6 +9,7 @@ vcpkg_from_github(
 set(VCPKG_BUILD_TYPE release)
 
 vcpkg_find_acquire_program(PYTHON3)
+vcpkg_find_acquire_program(PKGCONFIG)
 
 include("${CURRENT_INSTALLED_DIR}/share/python3/vcpkg-port-config.cmake")
 
@@ -18,18 +19,30 @@ x_vcpkg_get_python_packages(
     PACKAGES
         "meson-python>=0.13.1"
         "meson>=1.1.0"
-        "pybind11>=2.13.2,!=2.13.3"
         "setuptools_scm"
         "numpy>=1.23"
+        "ninja"
     OUT_PYTHON_VAR PYTHON3_ENV
 )
+
+# Set PKG_CONFIG so meson can locate vcpkg-installed freetype, qhull, and pybind11
+set(ENV{PKG_CONFIG} "${PKGCONFIG}")
+if(VCPKG_TARGET_IS_WINDOWS)
+    set(ENV{PKG_CONFIG_PATH}
+        "${CURRENT_INSTALLED_DIR}/lib/pkgconfig;${CURRENT_INSTALLED_DIR}/share/pkgconfig")
+else()
+    set(ENV{PKG_CONFIG_PATH}
+        "${CURRENT_INSTALLED_DIR}/lib/pkgconfig:${CURRENT_INSTALLED_DIR}/share/pkgconfig")
+endif()
 
 vcpkg_execute_required_process(
     COMMAND "${PYTHON3_ENV}" -I -m pip install
         --no-build-isolation
         --no-deps
+        --config-settings=setup-args=-Dsystem-freetype=true
+        --config-settings=setup-args=-Dsystem-qhull=true
         "${SOURCE_PATH}"
-        "--prefix=${CURRENT_PACKAGES_DIR}"
+        "--target=${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}"
     WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}"
     LOGNAME "pip-install-${TARGET_TRIPLET}"
 )
