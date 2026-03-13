@@ -13,6 +13,8 @@ vcpkg_find_acquire_program(PKGCONFIG)
 
 include("${CURRENT_INSTALLED_DIR}/share/python3/vcpkg-port-config.cmake")
 
+# Install the meson-python build backend and its requirements into a virtual environment.
+# build isolation is disabled below so these tools are used directly by pip when building.
 x_vcpkg_get_python_packages(
     PYTHON_VERSION "3"
     PYTHON_EXECUTABLE "${PYTHON3}"
@@ -25,7 +27,7 @@ x_vcpkg_get_python_packages(
     OUT_PYTHON_VAR PYTHON3_ENV
 )
 
-# Set PKG_CONFIG so meson can locate vcpkg-installed freetype, qhull, and pybind11
+# Set PKG_CONFIG so meson can locate vcpkg-installed freetype, qhull, and pybind11.
 set(ENV{PKG_CONFIG} "${PKGCONFIG}")
 if(VCPKG_TARGET_IS_WINDOWS)
     set(ENV{PKG_CONFIG_PATH}
@@ -35,6 +37,12 @@ else()
         "${CURRENT_INSTALLED_DIR}/lib/pkgconfig:${CURRENT_INSTALLED_DIR}/share/pkgconfig")
 endif()
 
+# --no-build-isolation: use the virtual environment set up above (with meson-python and build tools)
+#   rather than letting pip create its own isolated build environment.
+# --no-deps: runtime dependencies (numpy, pillow, etc.) are managed separately by the user via pip;
+#   only the matplotlib package itself is installed here.
+# --config-settings: instruct meson-python to use the vcpkg-installed system freetype and qhull
+#   instead of downloading and building bundled copies, which avoids network access during the build.
 vcpkg_execute_required_process(
     COMMAND "${PYTHON3_ENV}" -I -m pip install
         --no-build-isolation
