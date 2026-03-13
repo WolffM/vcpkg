@@ -1,0 +1,10 @@
+matplotlib is a Python package. It can be used after installing by importing in Python:
+
+    import matplotlib
+    import matplotlib.pyplot as plt
+
+For C++ applications using matplotlib-cpp, add the following to your CMakeLists.txt:
+
+    find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+    find_package(matplotlib-cpp CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE matplotlib-cpp::matplotlib-cpp Python3::Python)
