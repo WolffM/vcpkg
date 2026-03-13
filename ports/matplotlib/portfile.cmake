@@ -29,13 +29,10 @@ x_vcpkg_get_python_packages(
 
 # Set PKG_CONFIG so meson can locate vcpkg-installed freetype, qhull, and pybind11.
 set(ENV{PKG_CONFIG} "${PKGCONFIG}")
-if(VCPKG_TARGET_IS_WINDOWS)
-    set(ENV{PKG_CONFIG_PATH}
-        "${CURRENT_INSTALLED_DIR}/lib/pkgconfig;${CURRENT_INSTALLED_DIR}/share/pkgconfig")
-else()
-    set(ENV{PKG_CONFIG_PATH}
-        "${CURRENT_INSTALLED_DIR}/lib/pkgconfig:${CURRENT_INSTALLED_DIR}/share/pkgconfig")
-endif()
+vcpkg_host_path_list(PREPEND ENV{PKG_CONFIG_PATH}
+    "${CURRENT_INSTALLED_DIR}/lib/pkgconfig"
+    "${CURRENT_INSTALLED_DIR}/share/pkgconfig"
+)
 
 # --no-build-isolation: use the virtual environment set up above (with meson-python and build tools)
 #   rather than letting pip create its own isolated build environment.
