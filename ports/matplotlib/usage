@@ -1,0 +1,10 @@
+matplotlib provides a Python plotting library. To use it in Python:
+
+    import matplotlib
+    import matplotlib.pyplot as plt
+
+    # Example: simple line plot
+    plt.plot([1, 2, 3], [1, 4, 9])
+    plt.savefig("output.png")
+
+For more information, see https://matplotlib.org/stable/tutorials/index.html
