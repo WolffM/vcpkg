@@ -1,3 +1,6 @@
+set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+set(VCPKG_POLICY_SKIP_ABSOLUTE_PATHS_CHECK enabled) # pip dist-info/RECORD files contain absolute paths
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO matplotlib/matplotlib
@@ -53,3 +56,9 @@ vcpkg_execute_required_process(
 )
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE/LICENSE")
+
+# Remove compiled Python bytecode that pip may create during installation
+file(GLOB_RECURSE PYC_FILES "${CURRENT_PACKAGES_DIR}/*.pyc")
+if(PYC_FILES)
+    file(REMOVE ${PYC_FILES})
+endif()
